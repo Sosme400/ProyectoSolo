@@ -6,7 +6,7 @@ import LoginMicro from "./PaginaMicro/LoginMicro";
 import RegistroMicro from "./PaginaMicro/RegistroMicro";
 import AdminDashboard from "./PaginaMicroAdmin/AdminDashboard";
 import ProductsTable from "./PaginaMicroAdmin/components/ProductsTable";
-import CategoryManager from "./PaginaMicroAdmin/components/CategoryManager"; // Importa CategoryManager
+import CategoryManager from "./PaginaMicroAdmin/components/CategoryManager";
 import UserPage from "./UserComponents/UserPage";
 import UserCompra from "./UserComponents/User-Compra";
 import UserLayout from "./UserComponents/UserLayout";
@@ -15,9 +15,7 @@ import UserProfile from "./UserComponents/UserProfile";
 import UserOrders from "./UserComponents/UserOrders";
 import UserSettings from "./UserComponents/UserSettings";
 import ProductDetails from "./UserComponents/ProductDetails";
-import SuperPage from "./SuperAdmin/SuperPage";
-import LoginSuperAdmin from "./SuperAdmin/LoginSuperAdmin";
-import NavbarSuper from "./SuperAdmin/NavbarSuper";
+import ProtectedRoute from "./UserComponents/ProtectedRoute"; // Cambia la importación
 
 function App() {
   const [cart, setCart] = useState([]); // Estado del carrito
@@ -29,9 +27,9 @@ function App() {
           {/* Rutas de autenticación */}
           <Route path="/registro" element={<RegistroClientes />} />
           <Route path="/LoginUsuarios" element={<LoginUsuarios />} />
+          <Route path="/login" element={<LoginUsuarios />} />
           <Route path="/login-vendor" element={<LoginMicro />} />
           <Route path="/registro-micro" element={<RegistroMicro />} />
-          <Route path="/login-superadmin" element={<LoginSuperAdmin />} />
 
           {/* Rutas del usuario con layout */}
           <Route element={<UserLayout />}>
@@ -41,45 +39,37 @@ function App() {
             <Route path="/user-profile" element={<UserProfile />} />
             <Route path="/user-orders" element={<UserOrders />} />
             <Route path="/user-settings" element={<UserSettings />} />
-            <Route path="/product-details/:id" element={<ProductDetails />} /> {/* Incluye `:id` en la ruta */}
+            <Route path="/product-details/:id" element={<ProductDetails />} />
           </Route>
 
-          {/* Rutas de administrador */}
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin-dashboard/products" element={<ProductsTable />} />
-          <Route path="/admin-dashboard/categories" element={<CategoryManager />} /> {/* Nueva ruta para categorías */}
+          {/* Rutas de administrador protegidas */}
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard/products"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ProductsTable />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard/categories"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <CategoryManager />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Ruta para ver detalles de la tienda */}
           <Route path="/store/:storeName" element={<UserPage />} />
-
-          {/* Rutas de SuperAdmin con Navbar */}
-          <Route
-            path="/superadmin-dashboard"
-            element={
-              <div>
-                <NavbarSuper /> {/* Incluye NavbarSuper en el dashboard */}
-                <SuperPage />
-              </div>
-            }
-          />
-          <Route
-            path="/superadmin-stores-products"
-            element={
-              <div>
-                <NavbarSuper /> {/* Incluye NavbarSuper en la página de tiendas y productos */}
-                <UserPage cart={cart} setCart={setCart} />
-              </div>
-            }
-          />
-          <Route
-            path="/superadmin-product-details/:id"
-            element={
-              <div>
-                <NavbarSuper /> {/* Incluye NavbarSuper en la página de detalles del producto para SuperAdmin */}
-                <ProductDetails />
-              </div>
-            }
-          />
         </Routes>
       </Router>
     </div>
